@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import API from "../services/api"; // Axios instance
+import API from "../services/api.js"; // Axios instance
 
 const PublicResult = () => {
   const { shareId } = useParams();
