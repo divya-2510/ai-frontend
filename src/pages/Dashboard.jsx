@@ -14,21 +14,41 @@ const Dashboard = () => {
 
   const [showStartModal, setShowStartModal] = useState(false);
   const [role, setRole] = useState("");
+  const [customRole, setCustomRole] = useState(""); // New state for custom input
   const [level, setLevel] = useState("");
 
   const navigate = useNavigate();
+
+  // Roles List
+  const rolesList = [
+    "MERN Stack Developer",
+    "Frontend Developer",
+    "Backend Developer",
+    "Full Stack Developer",
+    "React Native Developer",
+    "Python Developer",
+    "Java Developer",
+    "Data Scientist",
+    "UI/UX Designer",
+    "Software Testing",
+    "Other"
+  ];
 
   const startNewChat = () => setShowStartModal(true);
 
   const handleStartInterview = async () => {
     try {
-      if (!role || !level) return alert("Please select role & level");
-      const res = await API.post("/interview/start", { role, level });
+      // Final role selection (custom ya dropdown)
+      const finalRole = role === "Other" ? customRole : role;
+
+      if (!finalRole || !level) return alert("Please select or type a role & level");
+      
+      const res = await API.post("/interview/start", { role: finalRole, level });
       const interview = res.data.interview;
 
       const newChat = {
         id: interview._id,
-        title: role,
+        title: finalRole,
         messages: [{ sender: "ai", text: interview.questions[0].question }],
       };
 
@@ -38,11 +58,14 @@ const Dashboard = () => {
       setCurrentQuestionIndex(0);
       setShowStartModal(false);
       setRole("");
+      setCustomRole("");
       setLevel("");
     } catch (err) {
       alert("Failed to start interview");
     }
   };
+
+  // ... (handleSend, useEffect, handleSelectChat same rahenge)
 
   const handleSend = async (text) => {
     try {
@@ -164,21 +187,37 @@ const Dashboard = () => {
       {showStartModal && (
         <div style={modalOverlay}>
           <div style={modalBox}>
-            <h2>Start Interview</h2>
+            <h2 style={{marginBottom: "20px"}}>Start Interview</h2>
+            
+            {/* Role Dropdown */}
             <select value={role} onChange={(e) => setRole(e.target.value)} style={input}>
               <option value="">Select Role</option>
-              <option value="MERN Developer">MERN Developer</option>
-              <option value="Frontend Developer">Frontend Developer</option>
-              <option value="Backend Developer">Backend Developer</option>
+              {rolesList.map((r, index) => (
+                <option key={index} value={r}>{r}</option>
+              ))}
             </select>
+
+            {/* Custom Role Input (Dikhai dega agar "Other" select hua) */}
+            {role === "Other" && (
+              <input 
+                type="text" 
+                placeholder="Type your role (e.g. DevOps Engineer)" 
+                value={customRole} 
+                onChange={(e) => setCustomRole(e.target.value)} 
+                style={input} 
+              />
+            )}
+
+            {/* Level Dropdown */}
             <select value={level} onChange={(e) => setLevel(e.target.value)} style={input}>
               <option value="">Select Level</option>
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
             </select>
+
             <button style={button} onClick={handleStartInterview}>🚀 Start</button>
-            <button style={{ ...button, background: "#6b7280", marginTop: "10px" }} onClick={() => setShowStartModal(false)}>Cancel</button>
+            <button style={{ ...button, background: "#6b7280", marginTop: "10px" }} onClick={() => {setShowStartModal(false); setRole(""); setCustomRole("");}}>Cancel</button>
           </div>
         </div>
       )}
@@ -186,13 +225,13 @@ const Dashboard = () => {
   );
 };
 
-// Styles (same as before)
+// Styles (same as your provided code)
 const emptyState = { height: "80vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" };
 const startBtn = { padding: "12px 24px", borderRadius: "8px", border: "none", backgroundColor: "#2563eb", color: "#fff", cursor: "pointer" };
 const resultBtn = { padding: "10px 20px", borderRadius: "6px", border: "none", backgroundColor: "#16a34a", color: "#fff", cursor: "pointer" };
 const modalOverlay = { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 };
-const modalBox = { background: "#fff", padding: "30px", borderRadius: "10px", width: "300px", textAlign: "center" };
-const input = { width: "100%", padding: "10px", marginBottom: "15px" };
-const button = { width: "100%", padding: "10px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "6px" };
+const modalBox = { background: "#fff", padding: "30px", borderRadius: "10px", width: "350px", textAlign: "center" };
+const input = { width: "100%", padding: "10px", marginBottom: "15px", borderRadius: "5px", border: "1px solid #ccc" };
+const button = { width: "100%", padding: "10px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "6px", cursor: "pointer" };
 
 export default Dashboard;
