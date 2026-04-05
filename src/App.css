@@ -4,3 +4,20 @@ html, body, #root {
   padding: 0;
   overflow: hidden; /* 🔥 only 1 scrollbar रहेगा */
 }
+/* Sidebar ko mobile par hide karne ya responsive banane ke liye */
+@media (max-width: 768px) {
+  .chat-sidebar {
+    display: none; /* Ya fir ek burger menu button banao ise dikhane ke liye */
+  }
+  
+  .chat-main-area {
+    width: 100%;
+    padding: 10px;
+  }
+
+  /* Buttons ko full width kar do mobile par */
+  button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
