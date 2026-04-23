@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Results from "./pages/Results";
 import AuthLayout from "./layouts/AuthLayout";
+import 'regenerator-runtime/runtime';
 
 const App = () => {
   return (

@@ -14,20 +14,24 @@ const ChatInput = ({ onSend }) => {
 
   // 1. Transcript update hone par text field mein daalo aur timer reset karo
   useEffect(() => {
-    if (transcript) {
-      setText(transcript);
-      
-      // Agar user kuch bhi bol raha hai, purana 30s ka timer cancel karo
-      if (timerRef.current) clearTimeout(timerRef.current);
+  if (transcript) {
+    setText(transcript);
+    
+    // Clear existing timer
+    if (timerRef.current) clearTimeout(timerRef.current);
 
-      // Naya 30s timer start karo
-      if (listening) {
-        timerRef.current = setTimeout(() => {
-          handleAutoSend(transcript);
-        }, 20000); // 20 seconds pause
+    // Start 20s auto-send timer only if user stops speaking
+    timerRef.current = setTimeout(() => {
+      if (transcript.trim()) {
+        handleAutoSend(transcript);
       }
-    }
-  }, [transcript, listening]);
+    }, 5000); // 20s bahut zyada hota hai, 5-7 seconds is better for UX
+  }
+  
+  return () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  };
+}, [transcript]);
 
   const handleSend = () => {
     if (!text.trim()) return;
