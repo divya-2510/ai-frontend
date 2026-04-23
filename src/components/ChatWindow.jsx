@@ -18,30 +18,21 @@ const ChatWindow = ({ messages }) => {
     >
       
         // Agar AI message mein separator '|||' hai
-     {messages.map((msg, index) => {
-  // Check if AI message and contains the separator
-  if (msg.sender === "ai" && msg.text && msg.text.includes("|||")) {
-    const parts = msg.text.split("|||");
-    const feedback = parts[0]?.trim();
-    const question = parts[1]?.trim();
+     // Is logic ko map ke andar replace kar
+{messages.map((msg, index) => {
+  const isAI = msg.sender === "ai";
+  const hasSeparator = msg.text && msg.text.includes("|||");
 
+  if (isAI && hasSeparator) {
+    const [feedback, question] = msg.text.split("|||");
     return (
-      <div key={index} style={aiMsgContainer}>
-        {feedback && (
-          <div style={feedbackStyle}>
-            <strong>💡 Feedback:</strong> {feedback}
-          </div>
-        )}
-        {question && (
-          <div style={questionStyle}>
-            <strong>❓ Next Question:</strong> {question}
-          </div>
-        )}
+      <div key={index} style={{ marginBottom: "20px", maxWidth: "85%" }}>
+        <div style={feedbackStyle}><b>💡 Feedback:</b> {feedback.trim()}</div>
+        <div style={questionStyle}><b>❓ Question:</b> {question.trim()}</div>
       </div>
     );
   }
 
-  // Fallback for normal messages
   return (
     <div key={index} style={msg.sender === "user" ? userMsg : aiMsg}>
       <strong>{msg.sender === "user" ? "You" : "AI"}:</strong> {msg.text}
