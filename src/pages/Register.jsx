@@ -12,12 +12,30 @@ const Register = () => {
   });
 
   const handleRegister = async () => {
+    const { name, email, password } = form;
+
+    // Basic Empty Fields Validation
+    if (!name || !email || !password) {
+      alert("Please fill all the fields");
+      return;
+    }
+
+    // Email Format Validation (Regex)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address");
+      return;
+    }
+
+    // Password Length Validation
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters long");
+      return;
+    }
+
     try {
       const res = await API.post("/auth/register", form);
-
       alert(res.data.message);
-
-      // register ke baad login page pe bhej do
       navigate("/");
     } catch (err) {
       alert(err.response?.data?.message || "Register failed");
@@ -35,27 +53,24 @@ const Register = () => {
           type="text"
           placeholder="Name"
           style={input}
-          onChange={(e) =>
-            setForm({ ...form, name: e.target.value })
-          }
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
 
         <input
           type="email"
           placeholder="Email"
           style={input}
-          onChange={(e) =>
-            setForm({ ...form, email: e.target.value })
-          }
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
         <input
           type="password"
           placeholder="Password"
           style={input}
-          onChange={(e) =>
-            setForm({ ...form, password: e.target.value })
-          }
+          value={form.password}
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
 
         <button style={button} onClick={handleRegister}>
