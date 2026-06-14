@@ -17,28 +17,30 @@ const ChatInput = ({ onSend }) => {
   useEffect(() => {
     if (transcript) {
       setText(transcript);
+    }
+  }, [transcript]);
 
-      // Clear previous timer on every new speech chunk
-      if (timerRef.current) clearTimeout(timerRef.current);
+  // 2. Auto-send logic after silence when listening
+  useEffect(() => {
+    // Timer को क्लियर करें जब भी यूज़र कुछ नया बोल रहा हो (text बदल रहा हो)
+    if (timerRef.current) clearTimeout(timerRef.current);
 
-      // Auto-send after 5 seconds of silence
+    if (listening && text.trim()) {
+      // 5 सेकंड की शांति (silence) के बाद ऑटोमैटिक सेंड करें
       timerRef.current = setTimeout(() => {
-        // Direct execution avoiding dependencies race condition
-        if (transcript.trim()) {
-          onSend(transcript);
-          setText("");
-          resetTranscript();
-          SpeechRecognition.stopListening();
-        }
+        onSend(text);
+        setText("");
+        resetTranscript();
+        SpeechRecognition.stopListening();
       }, 5000);
     }
-    
+
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [transcript, onSend, resetTranscript]);
+  }, [text, listening, onSend, resetTranscript]);
 
-  // 2. Separate Send Handler for Manual Click / Enter Press
+  // 3. Manual Click / Enter Press Send Handler
   const handleSend = () => {
     if (!text.trim()) return;
     
@@ -55,7 +57,7 @@ const ChatInput = ({ onSend }) => {
     } else {
       resetTranscript();
       setText("");
-      // Chrome/Edge issues handle karne ke liye simple options
+      // English (India) के साथ continuous मोड चालू करें
       SpeechRecognition.startListening({ continuous: true, language: "en-IN" });
     }
   };
