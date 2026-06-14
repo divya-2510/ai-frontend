@@ -125,17 +125,24 @@ const Dashboard = () => {
       const res = await API.get(`/interview/${id}`);
       const interview = res.data;
       const messages = [];
+      let lastAnsweredIndex = -1;
 
-      interview.questions.forEach((q) => {
+      interview.questions.forEach((q, idx) => {
         messages.push({ sender: "ai", text: q.question });
         if (q.answer) {
           messages.push({ sender: "user", text: q.answer });
           messages.push({ sender: "ai", text: `Feedback: ${q.feedback}` });
+          lastAnsweredIndex = idx; // Check kahan tak answer ho chuka hai
         }
       });
 
       setChats((prev) => prev.map((chat) => (chat.id === id ? { ...chat, messages } : chat)));
       setCurrentInterview(interview);
+      
+      // Index sync ongoing chats ke liye
+      const nextIndex = lastAnsweredIndex + 1;
+      setCurrentQuestionIndex(nextIndex < interview.questions.length ? nextIndex : 0);
+
       if (interview.status === "completed") navigate(`/results/${id}`);
     } catch (err) {
       alert("Failed to load interview");
