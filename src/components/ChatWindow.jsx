@@ -17,8 +17,7 @@ const ChatWindow = ({ messages }) => {
       }}
     >
       
-        // Agar AI message mein separator '|||' hai
-     // Is logic ko map ke andar replace kar
+        
 {messages.map((msg, index) => {
   const isAI = msg.sender === "ai";
   const hasSeparator = msg.text && msg.text.includes("|||");
